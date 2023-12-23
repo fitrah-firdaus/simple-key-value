@@ -7,15 +7,15 @@ import (
 	"time"
 )
 
-func NewMongoDatabase(config Config) *mongo.Database {
+func NewMongoDatabase(config Config) (*mongo.Database, *mongo.Client) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI(config.Get("MONGO_URI")))
-	defer func() {
+	client, _ := mongo.Connect(ctx, options.Client().ApplyURI(config.Get("MONGO_URI")))
+	/*defer func() {
 		if err = client.Disconnect(ctx); err != nil {
 			panic(err)
 		}
-	}()
+	}()*/
 	db := client.Database(config.Get("MONGO_DATABASE"))
-	return db
+	return db, client
 }

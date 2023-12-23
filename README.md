@@ -1,4 +1,4 @@
-# Simple Key Value
+# Dynamic Config Server 
 
 This application build using GoFiber Framework. 
 

@@ -2,17 +2,18 @@ package keyvalue
 
 import (
 	"context"
+	"github.com/gofiber/fiber/v2/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"simple-key-value/pkg/entities"
 	"time"
 )
 
 type Repository interface {
-	CreateKey(value *entities.KeyValue) (*entities.KeyValue, error)
+	CreateOrUpdateKey(value *entities.KeyValue) (*entities.KeyValue, error)
 	GetKey(key string) (*entities.KeyValue, error)
-	UpdateKey(value *entities.KeyValue) (*entities.KeyValue, error)
 	DeleteKey(key string) error
 }
 
@@ -20,15 +21,32 @@ type repository struct {
 	Collection *mongo.Collection
 }
 
-func (r repository) CreateKey(value *entities.KeyValue) (*entities.KeyValue, error) {
+func (r repository) CreateOrUpdateKey(value *entities.KeyValue) (*entities.KeyValue, error) {
 	value.ID = primitive.NewObjectID()
 	value.CreatedAt = time.Now()
 	value.UpdatedAt = time.Now()
-	_, err := r.Collection.InsertOne(context.Background(), value)
-	if err != nil {
-		return nil, err
+	log.Info("value = %s", value)
+	filter := bson.M{"key": value.Key}
+	update := bson.M{
+		"$set": bson.M{
+			"key":       value.Key,
+			"value":     value.Value,
+			"updatedAt": value.UpdatedAt,
+		},
 	}
-	return value, nil
+	upsert := true
+	after := options.After
+	opt := options.FindOneAndUpdateOptions{
+		ReturnDocument: &after,
+		Upsert:         &upsert,
+	}
+	result := r.Collection.FindOneAndUpdate(context.Background(), filter, update, &opt)
+	if result.Err() != nil {
+		log.Error(result.Err())
+		return nil, result.Err()
+	}
+	decodeErr := result.Decode(&value)
+	return value, decodeErr
 }
 
 func (r repository) GetKey(key string) (*entities.KeyValue, error) {
@@ -39,15 +57,6 @@ func (r repository) GetKey(key string) (*entities.KeyValue, error) {
 		return nil, err
 	}
 	return &result, nil
-}
-
-func (r repository) UpdateKey(value *entities.KeyValue) (*entities.KeyValue, error) {
-	value.UpdatedAt = time.Now()
-	_, err := r.Collection.UpdateOne(context.Background(), bson.M{"_id": value.ID}, bson.M{"$set": value})
-	if err != nil {
-		return nil, err
-	}
-	return value, nil
 }
 
 func (r repository) DeleteKey(key string) error {
