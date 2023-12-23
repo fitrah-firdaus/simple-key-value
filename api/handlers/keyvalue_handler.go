@@ -41,3 +41,19 @@ func GetKey(service keyvalue.Service) fiber.Handler {
 		return nil
 	}
 }
+
+func DeleteKey(service keyvalue.Service) fiber.Handler {
+	return func(ctx *fiber.Ctx) error {
+		key := ctx.Params("key")
+		err := service.DeleteKey(key)
+		if err != nil {
+			ctx.Status(http.StatusInternalServerError)
+			return ctx.JSON(presenter.KeyValueErrorResponse(err))
+		}
+		return ctx.JSON(&fiber.Map{
+			"status": true,
+			"data":   "Deleted successfully",
+			"err":    nil,
+		})
+	}
+}
