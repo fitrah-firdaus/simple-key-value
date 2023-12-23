@@ -2,6 +2,7 @@ package keyvalue
 
 import (
 	"context"
+	"github.com/gofiber/fiber/v2/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -24,8 +25,10 @@ func (r repository) CreateKey(value *entities.KeyValue) (*entities.KeyValue, err
 	value.ID = primitive.NewObjectID()
 	value.CreatedAt = time.Now()
 	value.UpdatedAt = time.Now()
+	log.Info("value = %s", value)
 	_, err := r.Collection.InsertOne(context.Background(), value)
 	if err != nil {
+		log.Error(err)
 		return nil, err
 	}
 	return value, nil
