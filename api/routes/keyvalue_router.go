@@ -7,5 +7,5 @@ import (
 )
 
 func KeyValueRouter(app fiber.Router, service keyvalue.Service) {
-	app.Post("/kv", handlers.CreateKey(service))
+	app.Post("/kv", handlers.CreateOrUpdateKey(service))
 }

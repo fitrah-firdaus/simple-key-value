@@ -12,9 +12,8 @@ import (
 )
 
 type Repository interface {
-	CreateKey(value *entities.KeyValue) (*entities.KeyValue, error)
+	CreateOrUpdateKey(value *entities.KeyValue) (*entities.KeyValue, error)
 	GetKey(key string) (*entities.KeyValue, error)
-	UpdateKey(value *entities.KeyValue) (*entities.KeyValue, error)
 	DeleteKey(key string) error
 }
 
@@ -22,7 +21,7 @@ type repository struct {
 	Collection *mongo.Collection
 }
 
-func (r repository) CreateKey(value *entities.KeyValue) (*entities.KeyValue, error) {
+func (r repository) CreateOrUpdateKey(value *entities.KeyValue) (*entities.KeyValue, error) {
 	value.ID = primitive.NewObjectID()
 	value.CreatedAt = time.Now()
 	value.UpdatedAt = time.Now()
@@ -58,15 +57,6 @@ func (r repository) GetKey(key string) (*entities.KeyValue, error) {
 		return nil, err
 	}
 	return &result, nil
-}
-
-func (r repository) UpdateKey(value *entities.KeyValue) (*entities.KeyValue, error) {
-	value.UpdatedAt = time.Now()
-	_, err := r.Collection.UpdateOne(context.Background(), bson.M{"_id": value.ID}, bson.M{"$set": value})
-	if err != nil {
-		return nil, err
-	}
-	return value, nil
 }
 
 func (r repository) DeleteKey(key string) error {

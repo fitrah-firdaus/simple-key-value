@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"log"
@@ -12,7 +13,14 @@ import (
 func main() {
 
 	config := configuration.New()
-	database := configuration.NewMongoDatabase(config)
+	database, client := configuration.NewMongoDatabase(config)
+
+	defer func() {
+		if err := client.Disconnect(context.Background()); err != nil {
+			panic(err)
+		}
+	}()
+
 	collection := database.Collection(config.Get("MONGO_COLLECTION"))
 	keyValueRepository := keyvalue.NewRepo(collection)
 	keyValueService := keyvalue.NewService(keyValueRepository)

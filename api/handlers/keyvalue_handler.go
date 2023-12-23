@@ -9,7 +9,7 @@ import (
 	"simple-key-value/pkg/keyvalue"
 )
 
-func CreateKey(service keyvalue.Service) fiber.Handler {
+func CreateOrUpdateKey(service keyvalue.Service) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
 		var requestBody entities.KeyValue
 		err := ctx.BodyParser(&requestBody)
@@ -18,7 +18,7 @@ func CreateKey(service keyvalue.Service) fiber.Handler {
 			ctx.Status(http.StatusBadRequest)
 			return ctx.JSON(presenter.KeyValueErrorResponse(err))
 		}
-		result, err := service.CreateKey(&requestBody)
+		result, err := service.CreateOrUpdateKey(&requestBody)
 		if err != nil {
 			ctx.Status(http.StatusInternalServerError)
 			return ctx.JSON(presenter.KeyValueErrorResponse(err))
