@@ -26,3 +26,18 @@ func CreateOrUpdateKey(service keyvalue.Service) fiber.Handler {
 		return ctx.JSON(presenter.KeyValueSuccessResponse(result))
 	}
 }
+
+func GetKey(service keyvalue.Service) fiber.Handler {
+	return func(ctx *fiber.Ctx) error {
+		key := ctx.Params("key")
+		result, err := service.GetKey(key)
+		if err != nil {
+			log.Error(err)
+		}
+		if result != nil {
+			return ctx.JSON(presenter.KeyValueSuccessResponse(result))
+		}
+		ctx.Status(http.StatusNotFound)
+		return nil
+	}
+}
