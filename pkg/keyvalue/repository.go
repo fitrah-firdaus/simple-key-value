@@ -6,6 +6,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"simple-key-value/pkg/entities"
 	"time"
 )
@@ -26,12 +27,27 @@ func (r repository) CreateKey(value *entities.KeyValue) (*entities.KeyValue, err
 	value.CreatedAt = time.Now()
 	value.UpdatedAt = time.Now()
 	log.Info("value = %s", value)
-	_, err := r.Collection.InsertOne(context.Background(), value)
-	if err != nil {
-		log.Error(err)
-		return nil, err
+	filter := bson.M{"key": value.Key}
+	update := bson.M{
+		"$set": bson.M{
+			"key":       value.Key,
+			"value":     value.Value,
+			"updatedAt": value.UpdatedAt,
+		},
 	}
-	return value, nil
+	upsert := true
+	after := options.After
+	opt := options.FindOneAndUpdateOptions{
+		ReturnDocument: &after,
+		Upsert:         &upsert,
+	}
+	result := r.Collection.FindOneAndUpdate(context.Background(), filter, update, &opt)
+	if result.Err() != nil {
+		log.Error(result.Err())
+		return nil, result.Err()
+	}
+	decodeErr := result.Decode(&value)
+	return value, decodeErr
 }
 
 func (r repository) GetKey(key string) (*entities.KeyValue, error) {
