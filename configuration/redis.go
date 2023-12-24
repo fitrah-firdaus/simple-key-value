@@ -10,6 +10,7 @@ import (
 type RedisCache interface {
 	Set(key string, value string) error
 	Get(key string) (string, error)
+	Remove(key string) error
 }
 
 type redisCache struct {
@@ -22,6 +23,10 @@ func (r redisCache) Set(key string, value string) error {
 
 func (r redisCache) Get(key string) (string, error) {
 	return r.rdb.Get(context.Background(), key).Result()
+}
+
+func (r redisCache) Remove(key string) error {
+	return r.rdb.Del(context.Background(), key).Err()
 }
 
 func NewRedisCache(config Config) RedisCache {

@@ -52,6 +52,7 @@ func (s *keyValueService) GetKey(key string) (*entities.KeyValue, error) {
 }
 
 func (s *keyValueService) DeleteKey(key string) error {
+	_ = s.cache.Remove(key)
 	return s.repository.DeleteKey(key)
 }
 
