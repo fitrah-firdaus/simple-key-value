@@ -22,8 +22,9 @@ func main() {
 	}()
 
 	collection := database.Collection(config.Get("MONGO_COLLECTION"))
+	redisCache := configuration.NewRedisCache(config)
 	keyValueRepository := keyvalue.NewRepo(collection)
-	keyValueService := keyvalue.NewService(keyValueRepository)
+	keyValueService := keyvalue.NewService(keyValueRepository, redisCache)
 
 	app := fiber.New()
 	app.Use(cors.New())
