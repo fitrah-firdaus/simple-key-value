@@ -6,6 +6,7 @@ This application build using GoFiber Framework.
 
 - Golang 1.21
 - MongoDB
+- Redis
 
 ### Getting Started
 
