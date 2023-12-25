@@ -1,9 +1,6 @@
 package main
 
 import (
-	"context"
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/cors"
 	"log"
 	"simple-key-value/api/routes"
 	"simple-key-value/configuration"
@@ -12,26 +9,18 @@ import (
 
 func main() {
 
+	appInit := configuration.NewAppInit()
 	config := configuration.New()
-	database, client := configuration.NewMongoDatabase(config)
 
-	defer func() {
-		if err := client.Disconnect(context.Background()); err != nil {
-			panic(err)
-		}
-	}()
+	collection := appInit.InitMongoDB(config)
+	redisCache := appInit.InitRedis(config)
 
-	collection := database.Collection(config.Get("MONGO_COLLECTION"))
-	redisCache := configuration.NewRedisCache(config)
 	keyValueRepository := keyvalue.NewRepo(collection)
 	keyValueService := keyvalue.NewService(keyValueRepository, redisCache)
 
-	app := fiber.New()
-	app.Use(cors.New())
-	app.Get("/health", func(ctx *fiber.Ctx) error {
-		return ctx.Send([]byte("Health Check Success"))
-	})
+	app := appInit.InitFiberApp()
 	api := app.Group("/api")
 	routes.KeyValueRouter(api, keyValueService)
+
 	log.Fatal(app.Listen(":9090"))
 }
