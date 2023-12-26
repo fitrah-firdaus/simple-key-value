@@ -1,0 +1,2 @@
+ALTER TABLE kv
+  DROP PRIMARY KEY (keylog);
