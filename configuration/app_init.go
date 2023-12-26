@@ -3,7 +3,11 @@ package configuration
 import (
 	"database/sql"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/log"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/golang-migrate/migrate/v4"
+	"github.com/golang-migrate/migrate/v4/database/mysql"
+	_ "github.com/golang-migrate/migrate/v4/source/github"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -18,7 +22,22 @@ type AppInit interface {
 }
 
 func (a *appInit) InitMySQL(config Config) *sql.DB {
-	return NewMySQLDatabase(config)
+	db := NewMySQLDatabase(config)
+	driver, err := mysql.WithInstance(db, &mysql.Config{})
+	m, err := migrate.NewWithDatabaseInstance(
+		"github://fitrah-firdaus/simple-key-value/database/migration",
+		"mysql", driver)
+	if err != nil {
+		log.Error(err)
+	}
+	log.Info(driver)
+	log.Info(m)
+	err = m.Up()
+	if err != nil {
+		log.Error(err)
+		panic(err)
+	}
+	return db
 }
 
 func (a *appInit) InitMongoDB(config Config) *mongo.Collection {
