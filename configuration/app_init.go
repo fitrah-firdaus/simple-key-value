@@ -2,6 +2,7 @@ package configuration
 
 import (
 	"database/sql"
+	"github.com/fitrah-firdaus/simple-key-value/pkg/entities"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/log"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -43,7 +44,13 @@ func (a *appInit) InitMySQL(config Config) *sql.DB {
 }
 
 func (a *appInit) InitGormMySQL(config Config) *gorm.DB {
-	return NewGormMySQL(config)
+	db := NewGormMySQL(config)
+	err := db.AutoMigrate(&entities.KeyValue{})
+	if err != nil {
+		log.Error(err)
+		panic(err)
+	}
+	return db
 }
 
 func (a *appInit) InitMongoDB(config Config) *mongo.Collection {

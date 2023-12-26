@@ -44,10 +44,12 @@ func (s *TestSuite) SetupSuite() {
 	_ = config.Set("MYSQL_URI", s.mySQLTestContainer.GetURI())
 
 	//collection := appInit.InitMongoDB(config)
-	db := appInit.InitMySQL(config)
+	//db := appInit.InitMySQL(config)
+	db := appInit.InitGormMySQL(config)
 	redisCache := appInit.InitRedis(config)
 
-	keyValueRepository := repository.NewMySQLRepo(db)
+	//keyValueRepository := repository.NewMySQLRepo(db)
+	keyValueRepository := repository.NewGormRepository(db)
 	keyValueService := keyvalue.NewService(keyValueRepository, redisCache)
 
 	app = appInit.InitFiberApp()

@@ -43,7 +43,7 @@ func (s *keyValueService) GetKey(key string) (*entities.KeyValue, error) {
 	}
 
 	if resultFromDatabase != nil {
-		log.Info("result from database")
+		log.Info("result from database = ", resultFromDatabase)
 		err = s.cache.Set(resultFromDatabase.Key, resultFromDatabase.Value)
 		if err != nil {
 			log.Error(err)
