@@ -7,7 +7,7 @@ import (
 	"github.com/gofiber/fiber/v2/log"
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/mysql"
-	_ "github.com/golang-migrate/migrate/v4/source/file"
+	_ "github.com/golang-migrate/migrate/v4/source/github"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"time"
@@ -30,7 +30,7 @@ func NewMySQLDatabase(config Config) *sql.DB {
 	db, err := sql.Open("mysql", config.Get("MYSQL_URI"))
 	driver, err := mysql.WithInstance(db, &mysql.Config{})
 	m, err := migrate.NewWithDatabaseInstance(
-		"file://database/migration",
+		"github://fitrah-firdaus/simple-key-value/database/migration",
 		"mysql", driver)
 	if err != nil {
 		log.Error(err)
