@@ -26,6 +26,7 @@ require (
 	github.com/docker/go-connections v0.4.0 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
+	github.com/go-sql-driver/mysql v1.7.1 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/golang/snappy v0.0.1 // indirect
