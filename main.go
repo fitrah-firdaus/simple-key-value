@@ -1,10 +1,11 @@
 package main
 
 import (
+	"github.com/fitrah-firdaus/simple-key-value/api/routes"
+	"github.com/fitrah-firdaus/simple-key-value/configuration"
+	"github.com/fitrah-firdaus/simple-key-value/pkg/keyvalue"
+	"github.com/fitrah-firdaus/simple-key-value/pkg/keyvalue/repository"
 	"log"
-	"simple-key-value/api/routes"
-	"simple-key-value/configuration"
-	"simple-key-value/pkg/keyvalue"
 )
 
 func main() {
@@ -16,7 +17,7 @@ func main() {
 	db := appInit.InitMySQL(config)
 	redisCache := appInit.InitRedis(config)
 
-	keyValueRepository := keyvalue.NewMySQLRepo(db)
+	keyValueRepository := repository.NewMySQLRepo(db)
 	keyValueService := keyvalue.NewService(keyValueRepository, redisCache)
 
 	app := appInit.InitFiberApp()

@@ -13,6 +13,8 @@ require (
 	github.com/testcontainers/testcontainers-go/modules/mongodb v0.27.0
 	github.com/testcontainers/testcontainers-go/modules/redis v0.27.0
 	go.mongodb.org/mongo-driver v1.13.1
+	gorm.io/driver/mysql v1.5.2
+	gorm.io/gorm v1.25.5
 )
 
 require (
@@ -89,6 +91,4 @@ require (
 	google.golang.org/grpc v1.59.0 // indirect
 	google.golang.org/protobuf v1.31.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	gorm.io/driver/mysql v1.5.2 // indirect
-	gorm.io/gorm v1.25.5 // indirect
 )
