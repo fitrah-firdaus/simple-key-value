@@ -1,4 +1,4 @@
-module simple-key-value
+module github.com/fitrah-firdaus/simple-key-value
 
 go 1.21
 

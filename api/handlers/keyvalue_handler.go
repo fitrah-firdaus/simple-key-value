@@ -1,12 +1,12 @@
 package handlers
 
 import (
+	"github.com/fitrah-firdaus/simple-key-value/api/presenter"
+	"github.com/fitrah-firdaus/simple-key-value/pkg/entities"
+	"github.com/fitrah-firdaus/simple-key-value/pkg/keyvalue"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/log"
 	"net/http"
-	"simple-key-value/api/presenter"
-	"simple-key-value/pkg/entities"
-	"simple-key-value/pkg/keyvalue"
 )
 
 func CreateOrUpdateKey(service keyvalue.Service) fiber.Handler {

@@ -1,8 +1,8 @@
 package presenter
 
 import (
+	"github.com/fitrah-firdaus/simple-key-value/pkg/entities"
 	"github.com/gofiber/fiber/v2"
-	"simple-key-value/pkg/entities"
 )
 
 type KeyValue struct {

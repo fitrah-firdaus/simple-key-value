@@ -1,9 +1,9 @@
 package routes
 
 import (
+	"github.com/fitrah-firdaus/simple-key-value/api/handlers"
+	"github.com/fitrah-firdaus/simple-key-value/pkg/keyvalue"
 	"github.com/gofiber/fiber/v2"
-	"simple-key-value/api/handlers"
-	"simple-key-value/pkg/keyvalue"
 )
 
 func KeyValueRouter(app fiber.Router, service keyvalue.Service) {

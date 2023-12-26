@@ -2,8 +2,8 @@ package keyvalue
 
 import (
 	"database/sql"
+	"github.com/fitrah-firdaus/simple-key-value/pkg/entities"
 	"github.com/gofiber/fiber/v2/log"
-	"simple-key-value/pkg/entities"
 	"time"
 )
 

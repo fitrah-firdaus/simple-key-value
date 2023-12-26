@@ -32,6 +32,9 @@ func NewMySQLDatabase(config Config) *sql.DB {
 	m, err := migrate.NewWithDatabaseInstance(
 		"file://database/migration",
 		"mysql", driver)
+	if err != nil {
+		log.Error(err)
+	}
 	log.Info(driver)
 	log.Info(m)
 	err = m.Up()

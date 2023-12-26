@@ -2,12 +2,12 @@ package keyvalue
 
 import (
 	"context"
+	"github.com/fitrah-firdaus/simple-key-value/pkg/entities"
 	"github.com/gofiber/fiber/v2/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"simple-key-value/pkg/entities"
 	"time"
 )
 
