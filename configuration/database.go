@@ -7,6 +7,8 @@ import (
 	"github.com/gofiber/fiber/v2/log"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 	"time"
 )
 
@@ -30,4 +32,16 @@ func NewMySQLDatabase(config Config) *sql.DB {
 		panic(err)
 	}
 	return db
+}
+
+func NewGormMySQL(config Config) *gorm.DB {
+	sqlDB := NewMySQLDatabase(config)
+	gormDB, err := gorm.Open(mysql.New(mysql.Config{
+		Conn: sqlDB,
+	}), &gorm.Config{})
+	if err != nil {
+		log.Error(err)
+		panic(err)
+	}
+	return gormDB
 }

@@ -3,6 +3,7 @@ package keyvalue
 import (
 	"github.com/fitrah-firdaus/simple-key-value/configuration"
 	"github.com/fitrah-firdaus/simple-key-value/pkg/entities"
+	"github.com/fitrah-firdaus/simple-key-value/pkg/keyvalue/repository"
 	"github.com/gofiber/fiber/v2/log"
 )
 
@@ -13,7 +14,7 @@ type Service interface {
 }
 
 type keyValueService struct {
-	repository Repository
+	repository repository.Repository
 	cache      configuration.RedisCache
 }
 
@@ -56,7 +57,7 @@ func (s *keyValueService) DeleteKey(key string) error {
 	return s.repository.DeleteKey(key)
 }
 
-func NewService(r Repository, cache configuration.RedisCache) Service {
+func NewService(r repository.Repository, cache configuration.RedisCache) Service {
 	return &keyValueService{
 		repository: r,
 		cache:      cache,

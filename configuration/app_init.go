@@ -9,6 +9,7 @@ import (
 	"github.com/golang-migrate/migrate/v4/database/mysql"
 	_ "github.com/golang-migrate/migrate/v4/source/github"
 	"go.mongodb.org/mongo-driver/mongo"
+	"gorm.io/gorm"
 )
 
 type appInit struct {
@@ -16,6 +17,7 @@ type appInit struct {
 
 type AppInit interface {
 	InitMySQL(config Config) *sql.DB
+	InitGormMySQL(config Config) *gorm.DB
 	InitMongoDB(config Config) *mongo.Collection
 	InitRedis(config Config) RedisCache
 	InitFiberApp() *fiber.App
@@ -38,6 +40,10 @@ func (a *appInit) InitMySQL(config Config) *sql.DB {
 		panic(err)
 	}
 	return db
+}
+
+func (a *appInit) InitGormMySQL(config Config) *gorm.DB {
+	return NewGormMySQL(config)
 }
 
 func (a *appInit) InitMongoDB(config Config) *mongo.Collection {
