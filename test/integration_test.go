@@ -5,6 +5,7 @@ import (
 	"github.com/fitrah-firdaus/simple-key-value/api/routes"
 	"github.com/fitrah-firdaus/simple-key-value/configuration"
 	"github.com/fitrah-firdaus/simple-key-value/pkg/keyvalue"
+	"github.com/fitrah-firdaus/simple-key-value/pkg/keyvalue/repository"
 	"github.com/gofiber/fiber/v2"
 	"github.com/stretchr/testify/suite"
 	"net/http"
@@ -43,10 +44,12 @@ func (s *TestSuite) SetupSuite() {
 	_ = config.Set("MYSQL_URI", s.mySQLTestContainer.GetURI())
 
 	//collection := appInit.InitMongoDB(config)
-	db := appInit.InitMySQL(config)
+	//db := appInit.InitMySQL(config)
+	db := appInit.InitGormMySQL(config)
 	redisCache := appInit.InitRedis(config)
 
-	keyValueRepository := keyvalue.NewMySQLRepo(db)
+	//keyValueRepository := repository.NewMySQLRepo(db)
+	keyValueRepository := repository.NewGormRepository(db)
 	keyValueService := keyvalue.NewService(keyValueRepository, redisCache)
 
 	app = appInit.InitFiberApp()

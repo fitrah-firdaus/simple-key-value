@@ -5,11 +5,10 @@ import (
 	"database/sql"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gofiber/fiber/v2/log"
-	"github.com/golang-migrate/migrate/v4"
-	"github.com/golang-migrate/migrate/v4/database/mysql"
-	_ "github.com/golang-migrate/migrate/v4/source/github"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 	"time"
 )
 
@@ -28,19 +27,21 @@ func NewMongoDatabase(config Config) (*mongo.Database, *mongo.Client) {
 
 func NewMySQLDatabase(config Config) *sql.DB {
 	db, err := sql.Open("mysql", config.Get("MYSQL_URI"))
-	driver, err := mysql.WithInstance(db, &mysql.Config{})
-	m, err := migrate.NewWithDatabaseInstance(
-		"github://fitrah-firdaus/simple-key-value/database/migration",
-		"mysql", driver)
-	if err != nil {
-		log.Error(err)
-	}
-	log.Info(driver)
-	log.Info(m)
-	err = m.Up()
 	if err != nil {
 		log.Error(err)
 		panic(err)
 	}
 	return db
+}
+
+func NewGormMySQL(config Config) *gorm.DB {
+	sqlDB := NewMySQLDatabase(config)
+	gormDB, err := gorm.Open(mysql.New(mysql.Config{
+		Conn: sqlDB,
+	}), &gorm.Config{})
+	if err != nil {
+		log.Error(err)
+		panic(err)
+	}
+	return gormDB
 }

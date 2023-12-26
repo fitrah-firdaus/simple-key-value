@@ -2,9 +2,15 @@ package configuration
 
 import (
 	"database/sql"
+	"github.com/fitrah-firdaus/simple-key-value/pkg/entities"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/log"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/golang-migrate/migrate/v4"
+	"github.com/golang-migrate/migrate/v4/database/mysql"
+	_ "github.com/golang-migrate/migrate/v4/source/github"
 	"go.mongodb.org/mongo-driver/mongo"
+	"gorm.io/gorm"
 )
 
 type appInit struct {
@@ -12,13 +18,39 @@ type appInit struct {
 
 type AppInit interface {
 	InitMySQL(config Config) *sql.DB
+	InitGormMySQL(config Config) *gorm.DB
 	InitMongoDB(config Config) *mongo.Collection
 	InitRedis(config Config) RedisCache
 	InitFiberApp() *fiber.App
 }
 
 func (a *appInit) InitMySQL(config Config) *sql.DB {
-	return NewMySQLDatabase(config)
+	db := NewMySQLDatabase(config)
+	driver, err := mysql.WithInstance(db, &mysql.Config{})
+	m, err := migrate.NewWithDatabaseInstance(
+		"github://fitrah-firdaus/simple-key-value/database/migration",
+		"mysql", driver)
+	if err != nil {
+		log.Error(err)
+	}
+	log.Info(driver)
+	log.Info(m)
+	err = m.Up()
+	if err != nil {
+		log.Error(err)
+		panic(err)
+	}
+	return db
+}
+
+func (a *appInit) InitGormMySQL(config Config) *gorm.DB {
+	db := NewGormMySQL(config)
+	err := db.AutoMigrate(&entities.KeyValue{})
+	if err != nil {
+		log.Error(err)
+		panic(err)
+	}
+	return db
 }
 
 func (a *appInit) InitMongoDB(config Config) *mongo.Collection {
