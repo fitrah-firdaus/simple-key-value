@@ -2,13 +2,13 @@ package test
 
 import (
 	"context"
+	"github.com/fitrah-firdaus/simple-key-value/api/routes"
+	"github.com/fitrah-firdaus/simple-key-value/configuration"
+	"github.com/fitrah-firdaus/simple-key-value/pkg/keyvalue"
 	"github.com/gofiber/fiber/v2"
 	"github.com/stretchr/testify/suite"
 	"net/http"
 	"net/http/httptest"
-	"simple-key-value/api/routes"
-	"simple-key-value/configuration"
-	"simple-key-value/pkg/keyvalue"
 	"strings"
 	"testing"
 	"time"
@@ -18,13 +18,17 @@ var app *fiber.App
 
 type TestSuite struct {
 	suite.Suite
-	mongoContainer *MongoTestContainer
-	redisContainer *RedisTestContainer
-	server         httptest.Server
+	mySQLTestContainer *MySQLTestContainer
+	mongoContainer     *MongoTestContainer
+	redisContainer     *RedisTestContainer
+	server             httptest.Server
 }
 
 func (s *TestSuite) SetupSuite() {
 	var err error
+	s.mySQLTestContainer, err = NewMySQLTestContainer()
+	s.NoError(err)
+
 	s.mongoContainer, err = NewMongoTestContainer()
 	s.NoError(err)
 
@@ -36,11 +40,13 @@ func (s *TestSuite) SetupSuite() {
 
 	_ = config.Set("MONGO_URI", s.mongoContainer.GetURI())
 	_ = config.Set("REDIS_URI", s.redisContainer.GetURI())
+	_ = config.Set("MYSQL_URI", s.mySQLTestContainer.GetURI())
 
-	collection := appInit.InitMongoDB(config)
+	//collection := appInit.InitMongoDB(config)
+	db := appInit.InitMySQL(config)
 	redisCache := appInit.InitRedis(config)
 
-	keyValueRepository := keyvalue.NewRepo(collection)
+	keyValueRepository := keyvalue.NewMySQLRepo(db)
 	keyValueService := keyvalue.NewService(keyValueRepository, redisCache)
 
 	app = appInit.InitFiberApp()

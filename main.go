@@ -12,10 +12,11 @@ func main() {
 	appInit := configuration.NewAppInit()
 	config := configuration.New()
 
-	collection := appInit.InitMongoDB(config)
+	//collection := appInit.InitMongoDB(config)
+	db := appInit.InitMySQL(config)
 	redisCache := appInit.InitRedis(config)
 
-	keyValueRepository := keyvalue.NewRepo(collection)
+	keyValueRepository := keyvalue.NewMySQLRepo(db)
 	keyValueService := keyvalue.NewService(keyValueRepository, redisCache)
 
 	app := appInit.InitFiberApp()

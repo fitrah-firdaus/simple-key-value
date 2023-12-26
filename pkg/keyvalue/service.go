@@ -1,9 +1,9 @@
 package keyvalue
 
 import (
+	"github.com/fitrah-firdaus/simple-key-value/configuration"
+	"github.com/fitrah-firdaus/simple-key-value/pkg/entities"
 	"github.com/gofiber/fiber/v2/log"
-	"simple-key-value/configuration"
-	"simple-key-value/pkg/entities"
 )
 
 type Service interface {
